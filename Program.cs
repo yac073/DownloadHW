@@ -73,6 +73,7 @@ namespace ConsoleApp1
         {
             var client = new ScpClient("ieng6.ucsd.edu", UserName, PWD);
             client.Connect();
+            int i = 0;
             foreach (var student in StudentList)
             {
                 string homePath = (Environment.OSVersion.Platform == PlatformID.Unix ||
@@ -80,7 +81,7 @@ namespace ConsoleApp1
                     ? Environment.GetEnvironmentVariable("HOME")
                     : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
                 Directory.CreateDirectory(homePath + "/FA178Apsa" + Psa);
-                Console.WriteLine("Downloading from " + student.Name + "...");
+                Console.Write("Downloading from " + student.Name + "...");
                 var cmd = Client.RunCommand("cp ../" + student.Name + "/..psa" + Psa + ".tar.gz .");
                 if (cmd.Error.Length == 0)
                 {
@@ -94,9 +95,11 @@ namespace ConsoleApp1
                     client.Download(student.Name, dir);
                     Client.RunCommand("rm -r " + student.Name);
                     Client.RunCommand("rm *.tar.gz");
+                    i++;
+                    Console.WriteLine("Succeed      Total HW uploaded is " + i);
                 } else
                 {
-                    Console.WriteLine("Failed");
+                    Console.WriteLine("Failed      Total HW uploaded is " + i);
                 }
             }
         }
