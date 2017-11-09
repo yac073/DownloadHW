@@ -75,18 +75,22 @@ namespace ConsoleApp1
             client.Connect();
             foreach (var student in StudentList)
             {
-                Directory.CreateDirectory("~/FA178Apsa" + Psa);
+                string homePath = (Environment.OSVersion.Platform == PlatformID.Unix ||
+                    Environment.OSVersion.Platform == PlatformID.MacOSX)
+                    ? Environment.GetEnvironmentVariable("HOME")
+                    : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
+                Directory.CreateDirectory(homePath + "/FA178Apsa" + Psa);
                 Console.WriteLine("Downloading from " + student.Name + "...");
                 var cmd = Client.RunCommand("cp ../" + student.Name + "/..psa" + Psa + ".tar.gz .");
                 if (cmd.Error.Length == 0)
                 {
                     Client.RunCommand("mkdir " + student.Name);
                     Client.RunCommand("tar xf ..psa" + Psa+ ".tar.gz -C " + student.Name);
-                    Client.RunCommand("rm " + student.Name + "/*.png");
-                    Client.RunCommand("rm " + student.Name + "/*.jpg");
-                    Client.RunCommand("rm " + student.Name + "/*.jpeg");
-                    Directory.CreateDirectory("~/FA178Apsa" + Psa + "/" + student.Name);
-                    var dir = new DirectoryInfo("~/FA178Apsa" + Psa + "/" + student.Name);
+                    //Client.RunCommand("rm " + student.Name + "/*.png");
+                    //Client.RunCommand("rm " + student.Name + "/*.jpg");
+                    //Client.RunCommand("rm " + student.Name + "/*.jpeg");
+                    Directory.CreateDirectory(homePath + "/FA178Apsa" + Psa + "/" + student.Name);
+                    var dir = new DirectoryInfo(homePath + "/FA178Apsa" + Psa + "/" + student.Name);
                     client.Download(student.Name, dir);
                     Client.RunCommand("rm -r " + student.Name);
                     Client.RunCommand("rm *.tar.gz");
