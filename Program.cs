@@ -20,10 +20,12 @@ namespace ConsoleApp1
         public string UserName { get; set; }
         public string PWD { get; set; }
         public SshClient Client { get; set; }
+        public int Psa { get; set; }
         public List<Student> StudentList { get; set; }
         public TA()
         {
             Login();
+            GetPSANum();
         }
 
         private void Login()
@@ -43,6 +45,15 @@ namespace ConsoleApp1
                 Login();
             }
             StudentList = new List<Student>();
+        }
+        private void GetPSANum()
+        {            
+            Console.WriteLine("Which psa you want? enter a number");
+            Psa = Console.Read() - 48;
+            if (Psa < 0 || Psa > 9)
+            {
+                GetPSANum();
+            }
         }
         public void GetStudents()
         {
@@ -64,18 +75,18 @@ namespace ConsoleApp1
             client.Connect();
             foreach (var student in StudentList)
             {
-                Directory.CreateDirectory("~/FA178Apsa3");
+                Directory.CreateDirectory("~/FA178Apsa" + Psa);
                 Console.WriteLine("Downloading from " + student.Name + "...");
-                var cmd = Client.RunCommand("cp ../" + student.Name + "/..psa3.tar.gz .");
+                var cmd = Client.RunCommand("cp ../" + student.Name + "/..psa" + Psa + ".tar.gz .");
                 if (cmd.Error.Length == 0)
                 {
                     Client.RunCommand("mkdir " + student.Name);
-                    Client.RunCommand("tar xf ..psa3.tar.gz -C " + student.Name);
+                    Client.RunCommand("tar xf ..psa" + Psa+ ".tar.gz -C " + student.Name);
                     Client.RunCommand("rm " + student.Name + "/*.png");
                     Client.RunCommand("rm " + student.Name + "/*.jpg");
                     Client.RunCommand("rm " + student.Name + "/*.jpeg");
-                    Directory.CreateDirectory("~/FA178Apsa3/" + student.Name);
-                    var dir = new DirectoryInfo("~/FA178Apsa3/" + student.Name);
+                    Directory.CreateDirectory("~/FA178Apsa" + Psa + "/" + student.Name);
+                    var dir = new DirectoryInfo("~/FA178Apsa" + Psa + "/" + student.Name);
                     client.Download(student.Name, dir);
                     Client.RunCommand("rm -r " + student.Name);
                     Client.RunCommand("rm *.tar.gz");
